@@ -13,7 +13,7 @@ import java.util.Map;
 public class AppConfig {
 
     private int maxCars;
-    private Map<String,String[]> sorting;
+    private Map<String, String[]> sorting;
 
     public void setMaxCars(int maxCount) {
         this.maxCars = maxCount;
