@@ -1,8 +1,9 @@
-maxCars: 4
-sorting:
-    fields:
-        year,
-        mileage
+car:
+    maxCars: 4
+    sorting:
+        fields:
+            year,
+            mileage
 spring:
     application:
         name: Cars

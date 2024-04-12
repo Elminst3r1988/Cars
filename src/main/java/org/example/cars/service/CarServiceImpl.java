@@ -1,6 +1,8 @@
 package org.example.cars.service;
 
+import org.example.cars.config.AppConfig;
 import org.example.cars.dto.CarDto;
+import org.example.cars.exception.InvalidSortingFieldException;
 import org.example.cars.model.Car;
 import org.example.cars.repository.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class CarServiceImpl implements CarService {
-    @Value("${maxCars}")
-    private int maxCount;
+    @Autowired
+    AppConfig appConfig;
 
 
     private CarRepository carRepository;
@@ -44,21 +47,28 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDto> getCars(Integer count, String sortBy, String[] sortingFields) {
+    public List<CarDto> getCars(Integer count, String sortBy, Map<String, String[]> sortingFields) {
         List<Car> cars = carRepository.findAll();
-        switch (sortBy) {
-            case "model":
-                cars = cars.stream().sorted(Comparator.comparing(Car::getModel)).collect(Collectors.toList());
-                break;
-            case "year":
-                cars = cars.stream().sorted(Comparator.comparing(Car::getYear)).collect(Collectors.toList());
-                break;
-            case "mileage":
-                cars = cars.stream().sorted(Comparator.comparing(Car::getMileage)).collect(Collectors.toList());
-                break;
+
+        if (sortBy != null && !Arrays.asList(sortingFields.get("fields")).contains(sortBy)) {
+            throw new InvalidSortingFieldException("Sorting field '" + sortBy + "' is not supported.");
         }
 
-        if (count == null || count <= 0 || count > maxCount) {
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "model":
+                    cars = cars.stream().sorted(Comparator.comparing(Car::getModel)).collect(Collectors.toList());
+                    break;
+                case "year":
+                    cars = cars.stream().sorted(Comparator.comparing(Car::getYear)).collect(Collectors.toList());
+                    break;
+                case "mileage":
+                    cars = cars.stream().sorted(Comparator.comparing(Car::getMileage)).collect(Collectors.toList());
+                    break;
+            }
+        }
+
+        if (count == null || count <= 0 || count > appConfig.getMaxCars()) {
             return cars.stream().map(this::mapToDto).collect(Collectors.toList());
         } else {
             return cars.stream().map(this::mapToDto).limit(count).collect(Collectors.toList());

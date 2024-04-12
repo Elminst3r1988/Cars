@@ -1,5 +1,6 @@
 package org.example.cars.controller;
 
+import org.example.cars.config.AppConfig;
 import org.example.cars.dto.CarDto;
 import org.example.cars.exception.InvalidSortingFieldException;
 import org.example.cars.service.CarService;
@@ -19,21 +20,18 @@ public class CarController {
 
     private CarService carService;
 
-    private String[] sortingFields;
+    @Autowired
+    AppConfig appConfig;
 
     @Autowired
-    public CarController(CarService carService, @Value("${sorting.fields}") String[] sortingFields) {
+    public CarController(CarService carService) {
         this.carService = carService;
-        this.sortingFields = sortingFields;
     }
 
     @GetMapping("/cars")
     public String listCars(Model model, @RequestParam(required = false) Integer count,
                                         @RequestParam(required = false) String sortBy) {
-        if (sortBy != null && !Arrays.asList(sortingFields).contains(sortBy)) {
-            throw new InvalidSortingFieldException("Sorting field '" + sortBy + "' is not supported.");
-        }
-        model.addAttribute("cars", carService.getCars(count, sortBy, sortingFields));
+        model.addAttribute("cars", carService.getCars(count, sortBy, appConfig.getSorting()));
         return "cars";
     }
 
