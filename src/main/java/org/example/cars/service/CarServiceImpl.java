@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,12 +44,24 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDto> getCars(Integer count) {
-        List<Car> car = carRepository.findAll();
+    public List<CarDto> getCars(Integer count, String sortBy, String[] sortingFields) {
+        List<Car> cars = carRepository.findAll();
+        switch (sortBy) {
+            case "model":
+                cars = cars.stream().sorted(Comparator.comparing(Car::getModel)).collect(Collectors.toList());
+                break;
+            case "year":
+                cars = cars.stream().sorted(Comparator.comparing(Car::getYear)).collect(Collectors.toList());
+                break;
+            case "mileage":
+                cars = cars.stream().sorted(Comparator.comparing(Car::getMileage)).collect(Collectors.toList());
+                break;
+        }
+
         if (count == null || count <= 0 || count > maxCount) {
-            return car.stream().map(this::mapToDto).collect(Collectors.toList());
+            return cars.stream().map(this::mapToDto).collect(Collectors.toList());
         } else {
-            return car.stream().map(this::mapToDto).limit(count).collect(Collectors.toList());
+            return cars.stream().map(this::mapToDto).limit(count).collect(Collectors.toList());
         }
     }
 

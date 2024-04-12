@@ -1,0 +1,21 @@
+maxCars: 4
+sorting:
+    fields:
+        year,
+        mileage
+spring:
+    application:
+        name: Cars
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        password: 123456
+        url: jdbc:postgresql://localhost:5432/spring_hiber
+        username: postgres
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                hbm2ddl:
+                    auto: update
+                show_sql: true
+
