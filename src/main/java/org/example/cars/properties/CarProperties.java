@@ -1,16 +1,13 @@
-package org.example.cars.config;
+package org.example.cars.properties;
 
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 import java.util.Map;
 
-@Configuration
+
 @ConfigurationProperties(prefix = "car")
-public class AppConfig {
+public class CarProperties {
 
     private int maxCars;
     private Map<String, String[]> sorting;
